@@ -7,7 +7,7 @@ import (
 
 type Point struct {
 	UserID   string `json:"user_id"`
-	Points     int64
+	Points     int64	`json:"points"`
 	MaxPoints int64 `json:"max_points"`
 }
 

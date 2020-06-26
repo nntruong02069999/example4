@@ -10,10 +10,10 @@ import (
 )
 
 type User struct {
-	Id         string `xorm:"unique"`
-	Name       string `xorm:"not null"`
-	Birth      int64
-	Created    int64 `xorm:"created"`
+	Id         string `xorm:"unique",json:"id"`
+	Name       string `xorm:"not null",json:"name"`
+	Birth      int64	`json:"birth"`
+	Created    int64 `xorm:"created",json:"created"`
 	UpdatedAt int64  `json:"update_at"`
 }
 
@@ -190,10 +190,11 @@ func Bai3(db *Db) {
 		go printData(buffData, &wg)
 	}
 	err := db.ScanTableUser(buffData, &wg)
-	wg.Wait()
+	
 	if err != nil {
 		log.Println(err)
 	}
+	wg.Wait()
 }
 
 func printData(buffData chan *dataUser, wg *sync.WaitGroup) {
