@@ -14,7 +14,7 @@ type User struct {
 	Name       string `xorm:"not null"`
 	Birth      int64
 	Created    int64 `xorm:"created"`
-	Updated_at int64 `xorm:"updated"`
+	UpdatedAt int64  `json:update_at`
 }
 
 func (db *Db) CreateUser(user *User) error {
@@ -25,9 +25,9 @@ func (db *Db) CreateUser(user *User) error {
 	return err
 }
 
-func (db *Db) GetListUser() ([]User, error) {
-	var user []User
-	err := db.engine.Find(&user)
+func (db *Db) GetListUser() (*[]User, error) {
+	var user *[]User
+	err := db.engine.Find(user)
 	if err != nil {
 		log.Println("Không tìm thấy danh sách user")
 		return nil, err
@@ -50,11 +50,14 @@ func (db *Db) GetUserById(id string) (*User, error) {
 
 func (db *Db) UpdateUser(object, conditions *User) (error) {
 	aff , err := db.engine.Update(object, conditions)
+	if err != nil {
+		return err
+	}
 	if aff == 0 {
 		log.Println("Update user failed")
 		return errors.New("cannot update")
 	}
-	return err
+	return nil
 }
 
 func (db *Db) InsertToPointAfterCreateUser(user *User) (error) {
@@ -63,7 +66,7 @@ func (db *Db) InsertToPointAfterCreateUser(user *User) (error) {
 		log.Println(err)
 		return err
 	}
-	point := &Point{User_id : user.Id, Points : 10}
+	point := &Point{UserID : user.Id, Points : 10}
 	err = db.CreatePoint(point)
 	if err != nil {
 		log.Println(err)
@@ -95,7 +98,7 @@ func (db *Db) UpdateBirthUser(birth int64, id string) (error) {
 	 // Update info user
 	 user.Birth = birth
 	 user.Name = user.Name + " updated"
-	 user.Updated_at = time.Now().UnixNano()
+	 user.UpdatedAt = time.Now().UnixNano()
 	 _ , err = session.Update(user, &User{Id : id})
 	 if err != nil {
 		 session.Rollback()
@@ -103,7 +106,7 @@ func (db *Db) UpdateBirthUser(birth int64, id string) (error) {
 	 }
 
 	 // Update point of user
-	 point := &Point{User_id: user.Id}
+	 point := &Point{UserID: user.Id}
 	 _ , err2 := session.Get(point)
 	 if err2 != nil {
 		 log.Println(err2)
@@ -111,7 +114,7 @@ func (db *Db) UpdateBirthUser(birth int64, id string) (error) {
 		 return err2
 	 }
 	 point.Points += 10
-	 _ , err2 = session.Update(point, &Point{User_id: user.Id})
+	 _ , err2 = session.Update(point, &Point{UserID: user.Id})
 	 if err2 != nil {
 		log.Println(err2)
 		session.Rollback()
@@ -176,7 +179,6 @@ func (db *Db) ScanTableUser(buffData chan *dataUser, wg *sync.WaitGroup) (error)
 		buffData <- dtuser
 		wg.Add(1)
 	}
-	wg.Wait()
 	return nil
 }
 
@@ -188,6 +190,7 @@ func Bai3(db *Db) {
 		go printData(buffData, &wg)
 	}
 	err := db.ScanTableUser(buffData, &wg)
+	wg.Wait()
 	if err != nil {
 		log.Println(err)
 	}

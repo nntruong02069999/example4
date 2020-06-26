@@ -2,7 +2,6 @@ package main
 
 import (
 	_ "fmt"
-	"log"
 	_ "log"
 
 	"github.com/nntruong02069999/example4/database"
@@ -36,14 +35,14 @@ func main() {
 	// }
 
 	// Update user
-	user := &database.User{}
-	conditionUser := &database.User{Id: "123456"}
-	user.Name = "Testing"
-	user.Birth = 123456666
-	err := db.UpdateUser(user,conditionUser)
-	if err != nil {
-		log.Println(err)
-	}
+	// user := &database.User{}
+	// conditionUser := &database.User{Id: "123456"}
+	// user.Name = "Testing"
+	// user.Birth = 123456666
+	// err := db.UpdateUser(user,conditionUser)
+	// if err != nil {
+	// 	log.Println(err)
+	// }
 	
 	//Update birth
 	// err := db.UpdateBirthUser(12345672,"1234562")
@@ -54,5 +53,5 @@ func main() {
 	//db.TestInsertUserUsingGoroutines()
 	// Print data
 
-	//database.Bai3(db)
+	database.Bai3(db)
 }

@@ -6,9 +6,9 @@ import (
 )
 
 type Point struct {
-	User_id    string
+	UserID   string `json:user_id`
 	Points     int64
-	Max_points int64
+	MaxPoints int64 `json:max_points`
 }
 
 func (db *Db) CreatePoint(point *Point) error {
@@ -20,8 +20,8 @@ func (db *Db) CreatePoint(point *Point) error {
 	return nil
 }
 
-func (db *Db) UpdatePoint(point *Point) (error) {
-	_, err := db.engine.Update(point)
+func (db *Db) UpdatePoint(point, conditions *Point) (error) {
+	_, err := db.engine.Update(point, conditions)
 	if err != nil {
 		log.Println("Update failed")
 		return err
@@ -30,7 +30,7 @@ func (db *Db) UpdatePoint(point *Point) (error) {
 }
 
 func (db *Db) GetPointById(id string) (*Point, error) {
-	point := &Point{User_id: id}
+	point := &Point{UserID: id}
 	has, err := db.engine.Get(point)
 	if err != nil {
 		log.Println("Failed")
