@@ -14,7 +14,7 @@ type User struct {
 	Name       string `xorm:"not null"`
 	Birth      int64
 	Created    int64 `xorm:"created"`
-	UpdatedAt int64  `json:update_at`
+	UpdatedAt int64  `json:"update_at"`
 }
 
 func (db *Db) CreateUser(user *User) error {

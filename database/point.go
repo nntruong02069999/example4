@@ -6,9 +6,9 @@ import (
 )
 
 type Point struct {
-	UserID   string `json:user_id`
+	UserID   string `json:"user_id"`
 	Points     int64
-	MaxPoints int64 `json:max_points`
+	MaxPoints int64 `json:"max_points"`
 }
 
 func (db *Db) CreatePoint(point *Point) error {
