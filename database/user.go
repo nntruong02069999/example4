@@ -50,7 +50,7 @@ func (db *Db) GetUserById(id string) (*User, error) {
 }
 
 func (db *Db) UpdateUser(user *User) (error) {
-	_, err := db.engine.Update(user)
+	_, err := db.engine.Update(user, &User{Id : user.Id})
 	if err != nil {
 		log.Println("Update failed")
 		return err
@@ -97,7 +97,7 @@ func (db *Db) UpdateBirthUser(birth int64, id string) (error) {
 	 user.Birth = birth
 	 user.Name = user.Name + " updated"
 	 user.Updated_at = time.Now().UnixNano()
-	 _ , err = session.Update(user)
+	 _ , err = session.Update(user, &User{Id : id})
 	 if err != nil {
 		 session.Rollback()
 		 return err
@@ -112,7 +112,7 @@ func (db *Db) UpdateBirthUser(birth int64, id string) (error) {
 		 return err2
 	 }
 	 point.Points += 10
-	 _ , err2 = session.Update(point)
+	 _ , err2 = session.Update(point, &Point{User_id: user.Id})
 	 if err2 != nil {
 		log.Println(err2)
 		session.Rollback()

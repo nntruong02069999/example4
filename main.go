@@ -1,8 +1,9 @@
 package main
 
 import (
-	_"fmt"
-	_"log"
+	_ "fmt"
+	"log"
+	_ "log"
 
 	"github.com/nntruong02069999/example4/database"
 )
@@ -34,12 +35,14 @@ func main() {
 	// 	fmt.Println(user)
 	// }
 
-	// Update birth
-	//db.UpdateBirthUser(1234567,"123456")
-
+	//Update birth
+	err := db.UpdateBirthUser(12345672,"1234562")
+	if err != nil {
+		log.Println(err)
+	}	
 	//Insert 100 user
 	//db.TestInsertUserUsingGoroutines()
 	// Print data
 
-	database.Bai3(db)
+	//database.Bai3(db)
 }
