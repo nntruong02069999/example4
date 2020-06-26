@@ -10,10 +10,10 @@ import (
 )
 
 type User struct {
-	Id         string `xorm:"unique",json:"id"`
-	Name       string `xorm:"not null",json:"name"`
+	Id         string `xorm:"unique" json:"id"`
+	Name       string `xorm:"not null" json:"name"`
 	Birth      int64	`json:"birth"`
-	Created    int64 `xorm:"created",json:"created"`
+	Created    int64 `xorm:"created" json:"created"`
 	UpdatedAt int64  `json:"update_at"`
 }
 
