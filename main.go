@@ -27,19 +27,29 @@ func main() {
 	// 	log.Println("Không tìm thấy danh sách user")
 	// }
 
-	// Get user by ID
-	// user := db.GetUserById("123456")
-	// if user == (database.User{}){
+	//Get user by ID
+	// user , _ := db.GetUserById("123456")
+	// if user == (&database.User{}){
 	// 	log.Println("Không tìm thấy user")
 	// } else {
 	// 	fmt.Println(user)
 	// }
 
-	//Update birth
-	err := db.UpdateBirthUser(12345672,"1234562")
+	// Update user
+	user := &database.User{}
+	conditionUser := &database.User{Id: "123456"}
+	user.Name = "Testing"
+	user.Birth = 123456666
+	err := db.UpdateUser(user,conditionUser)
 	if err != nil {
 		log.Println(err)
-	}	
+	}
+	
+	//Update birth
+	// err := db.UpdateBirthUser(12345672,"1234562")
+	// if err != nil {
+	// 	log.Println(err)
+	// }	
 	//Insert 100 user
 	//db.TestInsertUserUsingGoroutines()
 	// Print data

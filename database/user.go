@@ -18,12 +18,11 @@ type User struct {
 }
 
 func (db *Db) CreateUser(user *User) error {
-	_ , err := db.engine.Insert(user)
-	if err != nil {
-		log.Println(err)
-		return err
+	aff , err := db.engine.Insert(user)
+	if aff == 0 {
+		return errors.New("Cannot insert to table User")
 	}
-	return nil
+	return err
 }
 
 func (db *Db) GetListUser() ([]User, error) {
@@ -40,7 +39,7 @@ func (db *Db) GetUserById(id string) (*User, error) {
 	user := &User{Id: id}
 	has, err := db.engine.Get(user)
 	if err != nil {
-		log.Println("Failed")
+		log.Println("Failed get list user")
 		return nil , err
 	}
 	if !has {
@@ -49,13 +48,13 @@ func (db *Db) GetUserById(id string) (*User, error) {
 	return user, nil
 }
 
-func (db *Db) UpdateUser(user *User) (error) {
-	_, err := db.engine.Update(user, &User{Id : user.Id})
-	if err != nil {
-		log.Println("Update failed")
-		return err
+func (db *Db) UpdateUser(object, conditions *User) (error) {
+	aff , err := db.engine.Update(object, conditions)
+	if aff == 0 {
+		log.Println("Update user failed")
+		return errors.New("cannot update")
 	}
-	return nil
+	return err
 }
 
 func (db *Db) InsertToPointAfterCreateUser(user *User) (error) {
@@ -160,7 +159,7 @@ type dataUser struct {
 	indentity int
 }
 
-func (db *Db) RunningBai3(buffData chan *dataUser, wg *sync.WaitGroup) (error) {
+func (db *Db) ScanTableUser(buffData chan *dataUser, wg *sync.WaitGroup) (error) {
 	
 	rows, err := db.engine.Rows(&User{})
 	if err != nil {
@@ -188,7 +187,7 @@ func Bai3(db *Db) {
 	for i := 1 ; i <=2 ; i++ {
 		go printData(buffData, &wg)
 	}
-	err := db.RunningBai3(buffData, &wg)
+	err := db.ScanTableUser(buffData, &wg)
 	if err != nil {
 		log.Println(err)
 	}
