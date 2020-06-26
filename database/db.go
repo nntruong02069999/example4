@@ -28,7 +28,7 @@ func (db *Db) ConnectDb(){
 
 func (db *Db) InitDatabase(){
 	initTables()
-	db.engine.Sync2(tables...)
+	db.engine.CreateTables(tables...)
 }
 
 func initTables(){

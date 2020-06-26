@@ -6,7 +6,7 @@ import (
 )
 
 type Point struct {
-	UserID   string `json:"user_id"`
+	UserId   string `json:"user_id"`
 	Points     int64	`json:"points"`
 	MaxPoints int64 `json:"max_points"`
 }
@@ -30,7 +30,7 @@ func (db *Db) UpdatePoint(point, conditions *Point) (error) {
 }
 
 func (db *Db) GetPointById(id string) (*Point, error) {
-	point := &Point{UserID: id}
+	point := &Point{UserId: id}
 	has, err := db.engine.Get(point)
 	if err != nil {
 		log.Println("Failed")

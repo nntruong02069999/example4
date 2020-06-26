@@ -66,7 +66,7 @@ func (db *Db) InsertToPointAfterCreateUser(user *User) (error) {
 		log.Println(err)
 		return err
 	}
-	point := &Point{UserID : user.Id, Points : 10}
+	point := &Point{UserId : user.Id, Points : 10}
 	err = db.CreatePoint(point)
 	if err != nil {
 		log.Println(err)
@@ -106,7 +106,7 @@ func (db *Db) UpdateBirthUser(birth int64, id string) (error) {
 	 }
 
 	 // Update point of user
-	 point := &Point{UserID: user.Id}
+	 point := &Point{UserId: user.Id}
 	 _ , err2 := session.Get(point)
 	 if err2 != nil {
 		 log.Println(err2)
@@ -114,7 +114,7 @@ func (db *Db) UpdateBirthUser(birth int64, id string) (error) {
 		 return err2
 	 }
 	 point.Points += 10
-	 _ , err2 = session.Update(point, &Point{UserID: user.Id})
+	 _ , err2 = session.Update(point, &Point{UserId: user.Id})
 	 if err2 != nil {
 		log.Println(err2)
 		session.Rollback()

@@ -9,8 +9,9 @@ import (
 
 func main() {
 	db := new(database.Db)
-	//db.InitDatabase()
+	
 	db.ConnectDb()
+	db.InitDatabase()
 
 	//Create new User
 	// var user database.User
