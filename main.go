@@ -41,5 +41,5 @@ func main() {
 	//db.TestInsertUserUsingGoroutines()
 	// Print data
 
-	db.Bai3()
+	database.Bai3(db)
 }

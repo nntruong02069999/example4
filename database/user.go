@@ -82,32 +82,37 @@ func (db *Db) UpdateBirthUser(birth int64, id string) (error) {
 		return err
 	}
 	// Check user exits
-	 user , err := db.GetUserById(id)
+	user := &User{Id : id}
+	has , err := session.Get(user)
 	 if err != nil {
 		 log.Println(err)
 		 session.Rollback()
 		 return err
+	 }
+	 if !has {
+		 session.Rollback()
+		 return errors.New("User not found")
 	 }
 	 // Update info user
 	 user.Birth = birth
 	 user.Name = user.Name + " updated"
 	 user.Updated_at = time.Now().UnixNano()
-	 err = db.UpdateUser(user)
+	 _ , err = session.Update(user)
 	 if err != nil {
-		 log.Println(err)
 		 session.Rollback()
 		 return err
 	 }
 
 	 // Update point of user
-	 point, err2 := db.GetPointById(user.Id)
+	 point := &Point{User_id: user.Id}
+	 _ , err2 := session.Get(point)
 	 if err2 != nil {
 		 log.Println(err2)
 		 session.Rollback()
 		 return err2
 	 }
 	 point.Points += 10
-	 err2 = db.UpdatePoint(point)
+	 _ , err2 = session.Update(point)
 	 if err2 != nil {
 		log.Println(err2)
 		session.Rollback()
@@ -155,13 +160,8 @@ type dataUser struct {
 	indentity int
 }
 
-func (db *Db) Bai3() (error) {
-	buffData := make(chan *dataUser, 100)
-	defer close(buffData)
-	var wg sync.WaitGroup
-	for i := 1 ; i <=2 ; i++ {
-		go printData(buffData, &wg)
-	}
+func (db *Db) RunningBai3(buffData chan *dataUser, wg *sync.WaitGroup) (error) {
+	
 	rows, err := db.engine.Rows(&User{})
 	if err != nil {
 		log.Println(err)
@@ -179,6 +179,19 @@ func (db *Db) Bai3() (error) {
 	}
 	wg.Wait()
 	return nil
+}
+
+func Bai3(db *Db) {
+	buffData := make(chan *dataUser, 100)
+	defer close(buffData)
+	var wg sync.WaitGroup
+	for i := 1 ; i <=2 ; i++ {
+		go printData(buffData, &wg)
+	}
+	err := db.RunningBai3(buffData, &wg)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func printData(buffData chan *dataUser, wg *sync.WaitGroup) {
