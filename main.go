@@ -10,8 +10,9 @@ import (
 func main() {
 	db := new(database.Db)
 	
-	db.ConnectDb()
-	db.InitDatabase()
+	createCliGolang(db)
+	//db.ConnectDb()
+	//db.InitDatabase()
 
 	//Create new User
 	// var user database.User
@@ -54,5 +55,5 @@ func main() {
 	//db.TestInsertUserUsingGoroutines()
 	// Print data
 
-	database.Bai3(db)
+	//database.Bai3(db)
 }
