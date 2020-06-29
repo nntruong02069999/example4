@@ -15,22 +15,28 @@ var (
 	tables [] interface{}
 )
 
-func (db *Db) ConnectDb(){
+func (db *Db) ConnectDb() error{
 	var err error
 	db.engine, err = xorm.NewEngine("mysql","root:root@/test?charset=utf8")
 	if err != nil {
 		log.Println("Connect database faild")
+		return err
 	} else {
 		log.Println("Connect database success")
 	}
 	db.engine.ShowSQL(true)
+	return nil
 }
 
-func (db *Db) InitDatabase(){
+func (db *Db) InitDatabase() error {
 	initTables()
-	db.engine.CreateTables(tables...)
+	err := db.engine.CreateTables(tables...)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func initTables(){
+func initTables() {
 	tables = append(tables, new(User), new(Point))
 }

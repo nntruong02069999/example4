@@ -12,14 +12,29 @@ func createCliGolang(db *database.Db) error {
 	app := cli.NewApp()
 	app.Name = "cli-golang"
 	app.Version = "0.0.1"
-	app.Usage = "Using cli in golang to run app"
+	app.Usage = "Using cli in golang to run app"	
+	addCommandCli(app, db)
+	err := app.Run(os.Args)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func addCommandCli(app *cli.App, db *database.Db) {
 	app.Commands = []*cli.Command{
 		{
 			Name : "createDb",
 			Usage: "Run command to create database",
 			Action: func(c *cli.Context) error {
-				db.ConnectDb()
-				db.InitDatabase()
+				err := db.ConnectDb()
+				if err != nil {
+					panic(err)
+				}
+				err = db.InitDatabase()
+				if err != nil {
+					panic("Create database faild")
+				}
 				return nil
 			},
 		},
@@ -27,15 +42,12 @@ func createCliGolang(db *database.Db) error {
 			Name : "startApp",
 			Usage: "Run command to running app",
 			Action : func(c *cli.Context) error {
-				db.ConnectDb()
+				err := db.ConnectDb()
+				if err != nil {
+					panic(err)
+				}
 				return nil
 			},
 		},
 	}
-
-	err := app.Run(os.Args)
-	if err != nil {
-		return err
-	}
-	return nil
 }
