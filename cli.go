@@ -1,14 +1,14 @@
 package main
 
 import (
-	"log"
+	_ "log"
 	"os"
 
 	"github.com/nntruong02069999/example4/database"
 	"github.com/urfave/cli/v2"
 )
 
-func createCliGolang(db *database.Db) {
+func createCliGolang(db *database.Db) error {
 	app := cli.NewApp()
 	app.Name = "cli-golang"
 	app.Version = "0.0.1"
@@ -35,6 +35,7 @@ func createCliGolang(db *database.Db) {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }

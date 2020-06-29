@@ -10,7 +10,11 @@ import (
 func main() {
 	db := new(database.Db)
 	
-	createCliGolang(db)
+	err := createCliGolang(db)
+	if err != nil {
+		panic("Stop program !!")
+	}
+	
 	//db.ConnectDb()
 	//db.InitDatabase()
 
