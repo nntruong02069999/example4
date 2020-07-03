@@ -2,7 +2,7 @@ package database
 
 import (
 	"errors"
-	"log"
+	_"log"
 )
 
 type Point struct {
@@ -11,29 +11,26 @@ type Point struct {
 	MaxPoints int64 `json:"max_points"`
 }
 
-func (db *Db) CreatePoint(point *Point) error {
-	_, err := db.engine.Insert(point)
+func (database *Db) CreatePoint(point *Point) error {
+	_, err := database.engine.Insert(point)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 	return nil
 }
 
-func (db *Db) UpdatePoint(point, conditions *Point) (error) {
-	_, err := db.engine.Update(point, conditions)
+func (database *Db) UpdatePoint(point, conditions *Point) (error) {
+	_, err := database.engine.Update(point, conditions)
 	if err != nil {
-		log.Println("Update failed")
 		return err
 	}
 	return nil
 }
 
-func (db *Db) GetPointById(id string) (*Point, error) {
+func (database *Db) GetPointById(id string) (*Point, error) {
 	point := &Point{UserId: id}
-	has, err := db.engine.Get(point)
+	has, err := database.engine.Get(point)
 	if err != nil {
-		log.Println("Failed")
 		return nil , err
 	}
 	if !has {

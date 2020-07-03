@@ -1,10 +1,11 @@
 package database
 
 import (
-	_ "github.com/go-sql-driver/mysql"
-	"xorm.io/xorm"
+	"errors"
 	"log"
 
+	_ "github.com/go-sql-driver/mysql"
+	"xorm.io/xorm"
 )
 
 type Db struct {
@@ -19,11 +20,9 @@ func (db *Db) ConnectDb() error{
 	var err error
 	db.engine, err = xorm.NewEngine("mysql","root:root@/test?charset=utf8")
 	if err != nil {
-		log.Println("Connect database faild")
-		return err
-	} else {
-		log.Println("Connect database success")
+		return errors.New("Connect database faild")
 	}
+	log.Println("Connect database success")
 	db.engine.ShowSQL(true)
 	return nil
 }

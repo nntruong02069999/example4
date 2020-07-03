@@ -3,7 +3,7 @@ package database
 import (
 	"errors"
 	"fmt"
-	"log"
+	_"log"
 	"strconv"
 	"sync"
 	"time"
@@ -17,29 +17,30 @@ type User struct {
 	UpdatedAt int64  `json:"update_at"`
 }
 
-func (db *Db) CreateUser(user *User) error {
-	aff , err := db.engine.Insert(user)
+func (database *Db) CreateUser(user *User) error {
+	aff , err := database.engine.Insert(user)
+	if err != nil {
+		return err
+	}
 	if aff == 0 {
 		return errors.New("Cannot insert to table User")
 	}
-	return err
+	return nil
 }
 
-func (db *Db) GetListUser() (*[]User, error) {
+func (database *Db) GetListUser() (*[]User, error) {
 	var user *[]User
-	err := db.engine.Find(user)
+	err := database.engine.Find(user)
 	if err != nil {
-		log.Println("Không tìm thấy danh sách user")
-		return nil, err
+		return nil, errors.New("Can not find list")
 	}
 	return user , nil
 }
 
-func (db *Db) GetUserById(id string) (*User, error) {
+func (database *Db) GetUserById(id string) (*User, error) {
 	user := &User{Id: id}
-	has, err := db.engine.Get(user)
+	has, err := database.engine.Get(user)
 	if err != nil {
-		log.Println("Failed get list user")
 		return nil , err
 	}
 	if !has {
@@ -48,46 +49,41 @@ func (db *Db) GetUserById(id string) (*User, error) {
 	return user, nil
 }
 
-func (db *Db) UpdateUser(object, conditions *User) (error) {
-	aff , err := db.engine.Update(object, conditions)
+func (database *Db) UpdateUser(object, conditions *User) (error) {
+	aff , err := database.engine.Update(object, conditions)
 	if err != nil {
 		return err
 	}
 	if aff == 0 {
-		log.Println("Update user failed")
-		return errors.New("cannot update")
+		return errors.New("cannot update user")
 	}
 	return nil
 }
 
-func (db *Db) InsertToPointAfterCreateUser(user *User) (error) {
-	err := db.CreateUser(user)
+func (database *Db) InsertToPointAfterCreateUser(user *User) (error) {
+	err := database.CreateUser(user)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 	point := &Point{UserId : user.Id, Points : 10}
-	err = db.CreatePoint(point)
+	err = database.CreatePoint(point)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 	return nil
 }
 
 
-func (db *Db) UpdateBirthUser(birth int64, id string) (error) {
-	session := db.engine.NewSession()
+func (database *Db) UpdateBirthUser(birth int64, id string) (error) {
+	session := database.engine.NewSession()
 	defer session.Close()
 	if err := session.Begin() ; err != nil {
-		log.Println(err)
 		return err
 	}
 	// Check user exits
 	user := &User{Id : id}
 	has , err := session.Get(user)
 	 if err != nil {
-		 log.Println(err)
 		 session.Rollback()
 		 return err
 	 }
@@ -109,14 +105,12 @@ func (db *Db) UpdateBirthUser(birth int64, id string) (error) {
 	 point := &Point{UserId: user.Id}
 	 _ , err2 := session.Get(point)
 	 if err2 != nil {
-		 log.Println(err2)
 		 session.Rollback()
 		 return err2
 	 }
 	 point.Points += 10
 	 _ , err2 = session.Update(point, &Point{UserId: user.Id})
 	 if err2 != nil {
-		log.Println(err2)
 		session.Rollback()
 		return err2
 	 }
@@ -124,25 +118,25 @@ func (db *Db) UpdateBirthUser(birth int64, id string) (error) {
 	 return nil
 }
 
-func (db *Db) TestInsertUserUsingGoroutines() {
+func (database *Db) TestInsertUserUsingGoroutines() {
 	dsUser := NewDsUser()
 	for i := 1 ; i <= 10 ; i++ {
 		go func() {
 			for i := 1 ; i <= 10 ; i++ {
-				dsUser.InsertNewUser(db)
+				dsUser.InsertNewUser(database)
 			}
 		}()
 	}
 	time.Sleep(5 * time.Second)
 }
 
-func (data *DsDataUser) InsertNewUser(db *Db){
+func (data *DsDataUser) InsertNewUser(database *Db){
 	data.Lock()
 	var user User
 	user.Id = strconv.FormatInt(data.indentity, 10) 
 	user.Name = "Test " + user.Id  
 	data.indentity++
-	db.CreateUser(&user)
+	database.CreateUser(&user)
 	defer data.Unlock()
 }
 
@@ -166,35 +160,37 @@ func (db *Db) ScanTableUser(buffData chan *dataUser, wg *sync.WaitGroup) (error)
 	
 	rows, err := db.engine.Rows(&User{})
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 	defer rows.Close()
 	user := new(User)
 	count := 1
 	for rows.Next() {
-		rows.Scan(user)
-		dtuser := &dataUser{user: *user, indentity: count}
-		count ++
-		buffData <- dtuser
-		wg.Add(1)
+		err2 := rows.Scan(user)
+		if err2 == nil {
+			dtuser := &dataUser{user: *user, indentity: count}
+			count ++
+			buffData <- dtuser
+			wg.Add(1)
+		}
 	}
 	return nil
 }
 
-func Bai3(db *Db) {
+func Bai3(database *Db) (error) {
 	buffData := make(chan *dataUser, 100)
 	defer close(buffData)
 	var wg sync.WaitGroup
 	for i := 1 ; i <=2 ; i++ {
 		go printData(buffData, &wg)
 	}
-	err := db.ScanTableUser(buffData, &wg)
+	err := database.ScanTableUser(buffData, &wg)
 	
 	if err != nil {
-		log.Println(err)
+		return err
 	}
 	wg.Wait()
+	return nil
 }
 
 func printData(buffData chan *dataUser, wg *sync.WaitGroup) {

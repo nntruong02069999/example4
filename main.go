@@ -7,13 +7,14 @@ import (
 	"github.com/nntruong02069999/example4/database"
 )
 
+var db = new(database.Db)
+
 func main() {
-	db := new(database.Db)
-	
-	err := createCliGolang(db)
+	err := createCliGolang()
 	if err != nil {
 		panic("Stop program !!")
 	}
+	
 	
 	//db.ConnectDb()
 	//db.InitDatabase()
