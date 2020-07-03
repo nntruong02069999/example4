@@ -16,7 +16,7 @@ func main() {
 		panic("Stop program !!")
 	}
 	
-	TestInsertUserUsingGoroutines()
+	TestInsertUser()
 	//db.ConnectDb()
 	//db.InitDatabase()
 

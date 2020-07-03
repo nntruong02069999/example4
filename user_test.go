@@ -6,5 +6,5 @@ import (
 )
 
 func Test_user(t *testing.T) {
-	TestInsertUserUsingGoroutines()
+	TestInsertUser()
 }

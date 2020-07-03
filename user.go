@@ -5,7 +5,7 @@ import (
 	"log"
 	"strconv"
 	"sync"
-	"time"
+	_"time"
 
 	"github.com/nntruong02069999/example4/database"
 )
@@ -23,38 +23,15 @@ func InsertToPointAfterCreateUser(user *database.User) error {
 	return nil
 }
 
-func TestInsertUserUsingGoroutines() {
-	dsUser := NewDsUser()
-	for i := 1; i <= 10; i++ {
-		go func() {
-			for j := 1; j <= 10; j++ {
-				err := InsertNewUser(dsUser)
-				if err != nil {
-					log.Println(err)
-				}
-			}
-		}()
-	}
-	time.Sleep(5 * time.Second)
-}
-
-func InsertNewUser(data *database.DsDataUser) error {
-	data.Lock()
+func TestInsertUser() {
 	var user database.User
-	user.Id = strconv.FormatInt(data.Indentity, 10)
-	user.Name = "Test " + user.Id
-	data.Indentity++
-	data.Unlock()
-	err := db.CreateUser(&user)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func NewDsUser() *database.DsDataUser {
-	return &database.DsDataUser{
-		Indentity: 1,
+	for i := 1; i <= 100; i++ {
+		user.Id = strconv.FormatInt(int64(i), 10)
+		user.Name = "Test " + user.Id
+		err := db.CreateUser(&user)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }
 
