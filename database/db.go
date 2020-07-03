@@ -55,7 +55,7 @@ func (database *Db) CreateUser(user *User) error {
 	return nil
 }
 
-func (database *Db) GetListUser() ([]*User, error) {
+func (database *Db) GetListUsers() ([]*User, error) {
 	var user []*User
 	err := database.engine.Find(user)
 	if err != nil {

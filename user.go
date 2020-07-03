@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"sync"
 	"time"
@@ -26,8 +27,11 @@ func TestInsertUserUsingGoroutines() {
 	dsUser := NewDsUser()
 	for i := 1; i <= 10; i++ {
 		go func() {
-			for i := 1; i <= 10; i++ {
-				 InsertNewUser(dsUser)
+			for j := 1; j <= 10; j++ {
+				err := InsertNewUser(dsUser)
+				if err != nil {
+					log.Println(err)
+				}
 			}
 		}()
 	}
@@ -36,12 +40,12 @@ func TestInsertUserUsingGoroutines() {
 
 func InsertNewUser(data *database.DsDataUser) error {
 	data.Lock()
-	defer data.Unlock()
-	var user *database.User
+	var user database.User
 	user.Id = strconv.FormatInt(data.Indentity, 10)
 	user.Name = "Test " + user.Id
 	data.Indentity++
-	err := db.CreateUser(user)
+	data.Unlock()
+	err := db.CreateUser(&user)
 	if err != nil {
 		return err
 	}
