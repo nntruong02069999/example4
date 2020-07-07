@@ -15,6 +15,7 @@ func InsertToPointAfterCreateUser(user *database.User) error {
 	if err != nil {
 		return err
 	}
+	
 	point := &database.Point{UserId: user.Id, Points: 10}
 	err = db.CreatePoint(point)
 	if err != nil {
